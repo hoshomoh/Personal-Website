@@ -110,7 +110,7 @@
 <p>Laravel offers multiple ways of accessing request properties. You can browse through the official
  <a href="https://laravel.com/docs/8.x/requests">documentation</a> for a full list of the available methods.</p>
 
-<p>One and very popular way for accessing request properties is via <code class="highlighter-rouge">Dynamic Properties</code>. According to the Laravel
+<p>One and very popular way for accessing request properties is via <code class="language-plaintext highlighter-rouge">Dynamic Properties</code>. According to the Laravel
  documentation, this is what happens internally when you use dynamic properties:</p>
 
 <div class="epigraph"><blockquote><p>When using dynamic properties, Laravel will first look for the parameter's value in the request payload. If it is not present, Laravel will search for the field in the route parameters.
@@ -122,19 +122,19 @@
 
 <p>The same property might exist in both the route parameters and the input parameters. For example take the request below:</p>
 
-<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">name</span><span class="p">;</span>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">;</span>
 </code></pre></div></div>
 
-<p>If you meant to access the <code class="highlighter-rouge">name</code> from the route parameter then <code class="highlighter-rouge">$name</code> would be incorrect since laravel would return the value from the input parameters.</p>
+<p>If you meant to access the <code class="language-plaintext highlighter-rouge">name</code> from the route parameter then <code class="language-plaintext highlighter-rouge">$name</code> would be incorrect since laravel would return the value from the input parameters.</p>
 
 <h3 id="2-less-intuitive">2. Less intuitive</h3>
 
 <p>When I am reading through a codebase, I like to look at a variable and immediately guess where the value is coming from
-. With the usage of <code class="highlighter-rouge">dynamic properties</code>, this makes that impossible, thus making the code more difficult to understand
+. With the usage of <code class="language-plaintext highlighter-rouge">dynamic properties</code>, this makes that impossible, thus making the code more difficult to understand
  at first look.</p>
 
 <p>Laravel offers other more intuitive methods for accessing request properties for all kind of scenarios without
- having to use <code class="highlighter-rouge">dynamic properties</code> such that when another developer is reading through your codebase, they can
+ having to use <code class="language-plaintext highlighter-rouge">dynamic properties</code> such that when another developer is reading through your codebase, they can
   immediately guess where a variable is coming from. See table below:</p>
 
 <p><br /></p>
@@ -170,41 +170,41 @@
   </tbody>
 </table>
 
-<h3 id="what-of-request-get">What of <code class="highlighter-rouge">$request-&gt;get</code>?</h3>
+<h3 id="what-of-request-get">What of <code class="language-plaintext highlighter-rouge">$request-&gt;get</code>?</h3>
 
-<p><code class="highlighter-rouge">$request-&gt;get</code> works because the method belongs to <code class="highlighter-rouge">Symfony HttpFoundation</code> and is not usually needed when using
+<p><code class="language-plaintext highlighter-rouge">$request-&gt;get</code> works because the method belongs to <code class="language-plaintext highlighter-rouge">Symfony HttpFoundation</code> and is not usually needed when using
  Laravel. In fact, there is no mention of it within the Laravel documentation, so if I where you I will stay away
-  from, <code class="highlighter-rouge">$request-&gt;get</code>.</p>
+  from, <code class="language-plaintext highlighter-rouge">$request-&gt;get</code>.</p>
 
-<p>Another reason you should use <code class="highlighter-rouge">$request-&gt;input</code> over <code class="highlighter-rouge">$request-&gt;get</code> is because <code class="highlighter-rouge">$request-&gt;input</code> is more powerful
+<p>Another reason you should use <code class="language-plaintext highlighter-rouge">$request-&gt;input</code> over <code class="language-plaintext highlighter-rouge">$request-&gt;get</code> is because <code class="language-plaintext highlighter-rouge">$request-&gt;input</code> is more powerful
  and can be used with array/JSON inputs by using “dot” notation to access the array or JSON properties like below:</p>
 
-<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">input</span><span class="p">(</span><span class="s1">'products.0.name'</span><span class="p">);</span>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$name</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="nf">input</span><span class="p">(</span><span class="s1">'products.0.name'</span><span class="p">);</span>
 
-<span class="nv">$names</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">input</span><span class="p">(</span><span class="s1">'products.*.name'</span><span class="p">);</span>
+<span class="nv">$names</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="nf">input</span><span class="p">(</span><span class="s1">'products.*.name'</span><span class="p">);</span>
 </code></pre></div></div>
 
-<h3 id="why-is-request-route-not-documented">Why is <code class="highlighter-rouge">$request-&gt;route</code> not documented?</h3>
+<h3 id="why-is-request-route-not-documented">Why is <code class="language-plaintext highlighter-rouge">$request-&gt;route</code> not documented?</h3>
 
 <p>Actually it is indirectly documented in the <a href="https://laravel.com/docs/8.x/routing">route section</a>. You can access the
- current route using <code class="highlighter-rouge">$request-&gt;route</code> and this can also be used to access the route parameters like so:</p>
+ current route using <code class="language-plaintext highlighter-rouge">$request-&gt;route</code> and this can also be used to access the route parameters like so:</p>
 
-<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$userId</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">'user_id'</span><span class="p">);</span>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$userId</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="nf">route</span><span class="p">(</span><span class="s1">'user_id'</span><span class="p">);</span>
  
 <span class="c1">// With Default Value</span>
-<span class="nv">$names</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="na">route</span><span class="p">(</span><span class="s1">'user_id'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">);</span>
+<span class="nv">$names</span> <span class="o">=</span> <span class="nv">$request</span><span class="o">-&gt;</span><span class="nf">route</span><span class="p">(</span><span class="s1">'user_id'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">);</span>
 </code></pre></div></div>
 
 <p>Laravel supports dependency injection for route parameters, so if you are a fan of <a href="https
 ://laravel.com/docs/8.x/routing#route-model-binding">route model binding</a> like me then you should consider using parameter injection
- instead of <code class="highlighter-rouge">$request-&gt;route</code>. As an example, say you have a route as defined below:</p>
+ instead of <code class="language-plaintext highlighter-rouge">$request-&gt;route</code>. As an example, say you have a route as defined below:</p>
 
-<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Route</span><span class="o">::</span><span class="na">put</span><span class="p">(</span><span class="s1">'user/{id}'</span><span class="p">,</span> <span class="p">[</span><span class="nx">UserController</span><span class="o">::</span><span class="na">class</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">]);</span>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">Route</span><span class="o">::</span><span class="nf">put</span><span class="p">(</span><span class="s1">'user/{id}'</span><span class="p">,</span> <span class="p">[</span><span class="nc">UserController</span><span class="o">::</span><span class="n">class</span><span class="p">,</span> <span class="s1">'update'</span><span class="p">]);</span>
 </code></pre></div></div>
 
-<p>You may still type-hint the <code class="highlighter-rouge">Illuminate\Http\Request</code> and access your route parameter <code class="highlighter-rouge">{id}</code> by defining your controller method as follows:</p>
+<p>You may still type-hint the <code class="language-plaintext highlighter-rouge">Illuminate\Http\Request</code> and access your route parameter <code class="language-plaintext highlighter-rouge">{id}</code> by defining your controller method as follows:</p>
 
-<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">function</span> <span class="nf">update</span><span class="p">(</span><span class="nx">Request</span> <span class="nv">$request</span><span class="p">,</span> <span class="nv">$id</span><span class="p">)</span>
+<div class="language-php highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">public</span> <span class="k">function</span> <span class="n">update</span><span class="p">(</span><span class="kt">Request</span> <span class="nv">$request</span><span class="p">,</span> <span class="nv">$id</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="c1">//</span>
 <span class="p">}</span>

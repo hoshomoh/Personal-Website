@@ -5,16 +5,277 @@
     <description>Oshomo Oforomeh personal website and articles.</description>
     <link>https://oshomo.oforomeh.com/</link>
     <atom:link href="https://oshomo.oforomeh.com/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 06 May 2021 15:03:24 -0500</pubDate>
-    <lastBuildDate>Thu, 06 May 2021 15:03:24 -0500</lastBuildDate>
-    <generator>Jekyll v4.0.0</generator>
+    <pubDate>Tue, 22 Jun 2021 09:58:31 -0500</pubDate>
+    <lastBuildDate>Tue, 22 Jun 2021 09:58:31 -0500</lastBuildDate>
+    <generator>Jekyll v4.2.0</generator>
+    
+      <item>
+        <title>Using Context API in React</title>
+        <description>&lt;p&gt;&lt;label for=&quot;mn-id-whatever&quot; class=&quot;margin-toggle&quot;&gt; ⊕&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;mn-id-whatever&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;marginnote&quot;&gt;&lt;strong&gt;Article Outline:&lt;/strong&gt;&lt;br /&gt;&lt;br /&gt;&lt;a href=&quot;#creating-context&quot;&gt;Creating Context&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;#providing-context&quot;&gt;Providing Context&lt;/a&gt;&lt;br /&gt;&lt;a href=&quot;#consuming-context&quot;&gt;Consuming Context&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&quot;#updating-context&quot;&gt;Updating Context&lt;/a&gt; &lt;br /&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt; &lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Data is often passed to react components using props, whether as a single component or components with one or more 
+children components. This can be very cumbersome for global variables or properties like current logged-in user, 
+user locale, theme etc. React context provide us with an API to pass data across all components without having to 
+pass props from grand-parent to parent and then to child.&lt;/p&gt;
+
+&lt;p&gt;I often see devs try to use a state container like Redux to solve this problem but then end up with a more complex 
+solution of creating a store, initial state and then passing state value down to components using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;mapStateToProps&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The context API offers us a clean and re-usable way of passing global variables across all components in our 
+application.&lt;/p&gt;
+
+&lt;h2 id=&quot;creating-context&quot;&gt;Creating Context&lt;/h2&gt;
+
+&lt;p&gt;Say we wanted to create a global context for handling currently authenticated user. We start by creating a file 
+named &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UserContext.js&lt;/code&gt; with the content below:&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;createContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserProvider&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Provider&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserConsumer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Consumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The code above create a React context &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UserContext&lt;/code&gt; and gives us a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; and a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt;. 
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; as the name implies is the component that provides the value that will be accessed globally by other 
+components while &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt; is a component that has direct access to the global variable.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;React.createContext&lt;/code&gt; takes a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;defaultValue&lt;/code&gt; as you can see above. In our case, we set the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;defaultValue&lt;/code&gt; to 
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;null&lt;/code&gt;. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;defaultValue&lt;/code&gt; is only used when the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt; can not find a matching &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; above the component 
+tree. This is mostly useful during testing when you don’t want to wrap your components in a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt;&lt;label for=&quot;context-undefined-default-value&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;context-undefined-default-value&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;Passing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;undefined&lt;/code&gt; as the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;defaultValue&lt;/code&gt; does not cause the consuming components to 
+use this value.  &lt;/span&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;providing-context&quot;&gt;Providing Context&lt;/h2&gt;
+
+&lt;p&gt;No matter how you choose to consume a context value, the context &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; must always be a parent of the 
+components consuming the context value. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; takes &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;value&lt;/code&gt; as props and this value is passed down to all 
+descendent components that subscribe to the context value via a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./Home&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserProvider&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./UserContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;App&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Oshomo Oforomeh&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserProvider&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;/&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserProvider&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;user&lt;/code&gt; will ve available to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HomePage&lt;/code&gt; component and its children, grand-children and 
+great-grand-children. You need to be careful how you update and manage the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; value, because a change to the 
+&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;user&lt;/code&gt; will cause a re-render of all the components consuming the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; value.&lt;/p&gt;
+
+&lt;h2 id=&quot;consuming-context&quot;&gt;Consuming Context&lt;/h2&gt;
+
+&lt;p&gt;Unlike the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; the way you consume a context is not the same for class and functional components. I will show 
+you how to use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt; to subscribe to a context and access the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; value.&lt;/p&gt;
+
+&lt;h3 id=&quot;class-components&quot;&gt;Class Components&lt;/h3&gt;
+
+&lt;p&gt;The easiest way to consume a context in a class component is to use the static &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;contextType&lt;/code&gt; property on the class. 
+Using this property let you consume the nearest context &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; value using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this.context&lt;/code&gt;. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;this.context&lt;/code&gt; can be 
+used in all component lifecycle including the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;render&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./UserContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Component&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;contextType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;componentDidMount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// { name: 'Oshomo Oforomeh' }&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;static contextType = UserContext&lt;/code&gt; assumes that you are using the experimental public class field&lt;label for=&quot;public-class-field-explanation&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;public-class-field-explanation&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;Both public and private field declarations are an experimental feature 
+(stage 3) proposed at TC39, the JavaScript standards committee.&lt;br /&gt;&lt;br /&gt;Support in browsers is limited, but the 
+feature can be used through a build step with systems like Babel. &lt;/span&gt;. If you are not, then use the code sample below 
+instead.&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./UserContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Component&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;componentDidMount&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// { name: 'Oshomo Oforomeh' }&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;contextType&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The static &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;contextType&lt;/code&gt; has one drawback, it doesn’t allow a class component to consume multiple providers. To 
+consume multiple providers in a class component, we wrap our component with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt; component. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt; 
+component take a function that returns a React component as children. The function receives the context value like 
+below. This method can also be used when consuming a single &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Consuming single provider with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserConsumer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./UserContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Component&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Consuming multiple provider with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserConsumer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./UserContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;ThemeConsumer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./ThemeContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Component&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nx&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ThemeConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;theme&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+                    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;theme&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;color&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+                    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;span&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+                  &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+              &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;ThemeConsumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;functional-components--hooks&quot;&gt;Functional Components &amp;amp; Hooks&lt;/h3&gt;
+
+&lt;p&gt;Functional components are much simpler, whether you are consuming one or multiple provider. With functional 
+components we use the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;useContext&lt;/code&gt; hook which is equivalent to the static &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;contextType&lt;/code&gt; we used in the class 
+component. The only difference is we can use multiple hooks in a functional component, thus giving us the ability 
+to consume multiple provider with ease.&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./UserContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;useContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// You can add as much context as you want&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// const theme = React.useContext(ThemeContext);&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;updating-context&quot;&gt;Updating Context&lt;/h2&gt;
+
+&lt;p&gt;Sometimes you might want to update the context value from a deeply nested component down the tree, like 
+changing a theme from light to dark and vice versa.&lt;/p&gt;
+
+&lt;p&gt;In this case, you can pass a function down through the context value to allow consumers update context values using 
+this function. Let us make an update to our initial 
+context provider:&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;createContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;updateUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserProvider&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;children&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;updateUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;useState&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;updateUser&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Provider&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;children&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Provider&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserConsumer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Consumer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now we can get the user value from the context as we did before as well as update the user value in the context like 
+below:&lt;/p&gt;
+
+&lt;div class=&quot;language-tsx highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;react&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;./UserContext&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Home&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;updateUser&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;useContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;UserContext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;onClick&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;updateUser&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;Oshomo Updated&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+        Update User
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`Current User: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;&amp;lt;/&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;div&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;React.createContext()&lt;/code&gt; to create context and get the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Consumer&lt;/code&gt; from the created context.&lt;/p&gt;
+
+&lt;p&gt;I advise you wrap &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; in a parent component so you can easily manage &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Provider&lt;/code&gt; value.&lt;/p&gt;
+
+&lt;p&gt;You can consume a context in a class by using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;static contextType = Context&lt;/code&gt; inside the class or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Class.contextType = Context&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;To consume multiple context in a class, wrap you component in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt;Context.Consumer&amp;gt;{component}&amp;lt;/Context.Consumer&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can consume one or more context in a functional component by using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;React.useContext(Context)&lt;/code&gt;.&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 31 May 2021 11:18:00 -0500</pubDate>
+        <link>https://oshomo.oforomeh.com/articles/2021/05/using-context-api-in-react</link>
+        <guid isPermaLink="true">https://oshomo.oforomeh.com/articles/2021/05/using-context-api-in-react</guid>
+        
+        
+      </item>
     
       <item>
         <title>Accessing Laravel request properties dynamically a no-no</title>
         <description>&lt;p&gt;Laravel offers multiple ways of accessing request properties. You can browse through the official
  &lt;a href=&quot;https://laravel.com/docs/8.x/requests&quot;&gt;documentation&lt;/a&gt; for a full list of the available methods.&lt;/p&gt;
 
-&lt;p&gt;One and very popular way for accessing request properties is via &lt;code class=&quot;highlighter-rouge&quot;&gt;Dynamic Properties&lt;/code&gt;. According to the Laravel
+&lt;p&gt;One and very popular way for accessing request properties is via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Dynamic Properties&lt;/code&gt;. According to the Laravel
  documentation, this is what happens internally when you use dynamic properties:&lt;/p&gt;
 
 &lt;div class=&quot;epigraph&quot;&gt;&lt;blockquote&gt;&lt;p&gt;When using dynamic properties, Laravel will first look for the parameter's value in the request payload. If it is not present, Laravel will search for the field in the route parameters.
@@ -26,19 +287,19 @@
 
 &lt;p&gt;The same property might exist in both the route parameters and the input parameters. For example take the request below:&lt;/p&gt;
 
-&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;If you meant to access the &lt;code class=&quot;highlighter-rouge&quot;&gt;name&lt;/code&gt; from the route parameter then &lt;code class=&quot;highlighter-rouge&quot;&gt;$name&lt;/code&gt; would be incorrect since laravel would return the value from the input parameters.&lt;/p&gt;
+&lt;p&gt;If you meant to access the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;name&lt;/code&gt; from the route parameter then &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$name&lt;/code&gt; would be incorrect since laravel would return the value from the input parameters.&lt;/p&gt;
 
 &lt;h3 id=&quot;2-less-intuitive&quot;&gt;2. Less intuitive&lt;/h3&gt;
 
 &lt;p&gt;When I am reading through a codebase, I like to look at a variable and immediately guess where the value is coming from
-. With the usage of &lt;code class=&quot;highlighter-rouge&quot;&gt;dynamic properties&lt;/code&gt;, this makes that impossible, thus making the code more difficult to understand
+. With the usage of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dynamic properties&lt;/code&gt;, this makes that impossible, thus making the code more difficult to understand
  at first look.&lt;/p&gt;
 
 &lt;p&gt;Laravel offers other more intuitive methods for accessing request properties for all kind of scenarios without
- having to use &lt;code class=&quot;highlighter-rouge&quot;&gt;dynamic properties&lt;/code&gt; such that when another developer is reading through your codebase, they can
+ having to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dynamic properties&lt;/code&gt; such that when another developer is reading through your codebase, they can
   immediately guess where a variable is coming from. See table below:&lt;/p&gt;
 
 &lt;p&gt;&lt;br /&gt;&lt;/p&gt;
@@ -74,41 +335,41 @@
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;h3 id=&quot;what-of-request-get&quot;&gt;What of &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt;?&lt;/h3&gt;
+&lt;h3 id=&quot;what-of-request-get&quot;&gt;What of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt;?&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt; works because the method belongs to &lt;code class=&quot;highlighter-rouge&quot;&gt;Symfony HttpFoundation&lt;/code&gt; and is not usually needed when using
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt; works because the method belongs to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Symfony HttpFoundation&lt;/code&gt; and is not usually needed when using
  Laravel. In fact, there is no mention of it within the Laravel documentation, so if I where you I will stay away
-  from, &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt;.&lt;/p&gt;
+  from, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;Another reason you should use &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;input&lt;/code&gt; over &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt; is because &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;input&lt;/code&gt; is more powerful
+&lt;p&gt;Another reason you should use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;input&lt;/code&gt; over &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;get&lt;/code&gt; is because &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;input&lt;/code&gt; is more powerful
  and can be used with array/JSON inputs by using “dot” notation to access the array or JSON properties like below:&lt;/p&gt;
 
-&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'products.0.name'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'products.0.name'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-&lt;span class=&quot;nv&quot;&gt;$names&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'products.*.name'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$names&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'products.*.name'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;h3 id=&quot;why-is-request-route-not-documented&quot;&gt;Why is &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;route&lt;/code&gt; not documented?&lt;/h3&gt;
+&lt;h3 id=&quot;why-is-request-route-not-documented&quot;&gt;Why is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;route&lt;/code&gt; not documented?&lt;/h3&gt;
 
 &lt;p&gt;Actually it is indirectly documented in the &lt;a href=&quot;https://laravel.com/docs/8.x/routing&quot;&gt;route section&lt;/a&gt;. You can access the
- current route using &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;route&lt;/code&gt; and this can also be used to access the route parameters like so:&lt;/p&gt;
+ current route using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;route&lt;/code&gt; and this can also be used to access the route parameters like so:&lt;/p&gt;
 
-&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$userId&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'user_id'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;$userId&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'user_id'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
  
 &lt;span class=&quot;c1&quot;&gt;// With Default Value&lt;/span&gt;
-&lt;span class=&quot;nv&quot;&gt;$names&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'user_id'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$names&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'user_id'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;Laravel supports dependency injection for route parameters, so if you are a fan of &lt;a href=&quot;https
 ://laravel.com/docs/8.x/routing#route-model-binding&quot;&gt;route model binding&lt;/a&gt; like me then you should consider using parameter injection
- instead of &lt;code class=&quot;highlighter-rouge&quot;&gt;$request-&amp;gt;route&lt;/code&gt;. As an example, say you have a route as defined below:&lt;/p&gt;
+ instead of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$request-&amp;gt;route&lt;/code&gt;. As an example, say you have a route as defined below:&lt;/p&gt;
 
-&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'user/{id}'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;UserController&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'update'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'user/{id}'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;UserController&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'update'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;You may still type-hint the &lt;code class=&quot;highlighter-rouge&quot;&gt;Illuminate\Http\Request&lt;/code&gt; and access your route parameter &lt;code class=&quot;highlighter-rouge&quot;&gt;{id}&lt;/code&gt; by defining your controller method as follows:&lt;/p&gt;
+&lt;p&gt;You may still type-hint the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Illuminate\Http\Request&lt;/code&gt; and access your route parameter &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{id}&lt;/code&gt; by defining your controller method as follows:&lt;/p&gt;
 
-&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;div class=&quot;language-php highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$id&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;//&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
@@ -260,7 +521,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h2 id=&quot;setting-up-codeceptjs&quot;&gt;Setting up CodeceptJS&lt;/h2&gt;
 
-&lt;p&gt;We start with an empty project. I will call mine &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept-bdd-sample&lt;/code&gt;. Open up your favourite terminal, mine is iTerm2 and initialize npm:&lt;/p&gt;
+&lt;p&gt;We start with an empty project. I will call mine &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept-bdd-sample&lt;/code&gt;. Open up your favourite terminal, mine is iTerm2 and initialize npm:&lt;/p&gt;
 
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;npm init &lt;span class=&quot;nt&quot;&gt;-y&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
@@ -282,9 +543,9 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;npx codeceptjs gherkin:init
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;This command will add a gherkin section to the &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file. It will also prepare directories for the BDD features and step definitions as well as create the first feature file for you. By default, the step definitions folder is &lt;code class=&quot;highlighter-rouge&quot;&gt;step_definitions&lt;/code&gt; while the features’ folder is &lt;code class=&quot;highlighter-rouge&quot;&gt;features&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This command will add a gherkin section to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file. It will also prepare directories for the BDD features and step definitions as well as create the first feature file for you. By default, the step definitions folder is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;step_definitions&lt;/code&gt; while the features’ folder is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;features&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;I like to leave things this way but, feel free to rename them to whatever suits you. If you do rename them, remember to update the &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file.&lt;/p&gt;
+&lt;p&gt;I like to leave things this way but, feel free to rename them to whatever suits you. If you do rename them, remember to update the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file.&lt;/p&gt;
 
 &lt;h2 id=&quot;gherkin-keywords&quot;&gt;Gherkin Keywords&lt;/h2&gt;
 
@@ -310,11 +571,11 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h3 id=&quot;feature&quot;&gt;Feature&lt;/h3&gt;
 
-&lt;p&gt;The purpose of the &lt;code class=&quot;highlighter-rouge&quot;&gt;Feature&lt;/code&gt; keyword is to provide a high-level description of a software feature and to group related scenarios.&lt;/p&gt;
+&lt;p&gt;The purpose of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Feature&lt;/code&gt; keyword is to provide a high-level description of a software feature and to group related scenarios.&lt;/p&gt;
 
-&lt;p&gt;The first primary keyword in a Gherkin document must be &lt;code class=&quot;highlighter-rouge&quot;&gt;Feature&lt;/code&gt;, followed by a &lt;code class=&quot;highlighter-rouge&quot;&gt;:&lt;/code&gt; and a short text that describes the feature.&lt;/p&gt;
+&lt;p&gt;The first primary keyword in a Gherkin document must be &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Feature&lt;/code&gt;, followed by a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;:&lt;/code&gt; and a short text that describes the feature.&lt;/p&gt;
 
-&lt;p&gt;Replace the content of &lt;code class=&quot;highlighter-rouge&quot;&gt;basic.feature&lt;/code&gt; with the content below:&lt;/p&gt;
+&lt;p&gt;Replace the content of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;basic.feature&lt;/code&gt; with the content below:&lt;/p&gt;
 
 &lt;div class=&quot;language-gherkin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;Feature&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; Setting up CodeceptJS 
     This is a good description of the feature 
@@ -327,11 +588,11 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h3 id=&quot;scenario&quot;&gt;Scenario&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; describes a concrete example that illustrates a business rule. It consists of a list of steps. &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; consists of steps using the &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;When&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt;, &amp;amp; &lt;code class=&quot;highlighter-rouge&quot;&gt;And&lt;/code&gt; keywords.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; describes a concrete example that illustrates a business rule. It consists of a list of steps. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; consists of steps using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;When&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt;, &amp;amp; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;And&lt;/code&gt; keywords.&lt;/p&gt;
 
 &lt;p&gt;You can have as many steps as you like, but it is recommended to keep the number at 3-5 so, the scenario doesn’t lose its expressive power as a specification and documentation.&lt;/p&gt;
 
-&lt;p&gt;We would add our first scenario to the &lt;code class=&quot;highlighter-rouge&quot;&gt;basic.feature&lt;/code&gt; so, the file should contain:&lt;/p&gt;
+&lt;p&gt;We would add our first scenario to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;basic.feature&lt;/code&gt; so, the file should contain:&lt;/p&gt;
 
 &lt;div class=&quot;language-gherkin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;Feature&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; Setting up CodeceptJS 
     This is a good description of the feature 
@@ -348,38 +609,38 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;npx codeceptjs gherkin:snippets
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;This will produce code templates for all undefined steps in the .feature files. By default, it will scan all the .feature files specified in the gherkin.features section of the &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file and produce code templates for all undefined steps.&lt;/p&gt;
+&lt;p&gt;This will produce code templates for all undefined steps in the .feature files. By default, it will scan all the .feature files specified in the gherkin.features section of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file and produce code templates for all undefined steps.&lt;/p&gt;
 
-&lt;p&gt;The generated code template will be written in the first file of the gherkin.steps array in our &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file which in our case will be &lt;code class=&quot;highlighter-rouge&quot;&gt;'./step_definitions/steps.js'&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The generated code template will be written in the first file of the gherkin.steps array in our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file which in our case will be &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;'./step_definitions/steps.js'&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;I don’t like this approach because this would mean step definition templates for all features will be written in the same file. The more feature files I add the longer the steps definition file will become.&lt;/p&gt;
 
-&lt;p&gt;This is also the reason why CodeceptJS provided the option to specify which feature file you want to scan and where you want the steps’ definition templates to be written. Passing &lt;code class=&quot;highlighter-rouge&quot;&gt;--feature&lt;/code&gt; option to the command above will make sure only the specified file will be scanned, while passing &lt;code class=&quot;highlighter-rouge&quot;&gt;--path&lt;/code&gt; option will write the generated code template to the specified file.&lt;label for=&quot;step-definition-file-in-config&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;step-definition-file-in-config&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;Before you pass a step file with the &lt;code class=&quot;highlighter-rouge&quot;&gt;--path&lt;/code&gt; option, the step should already be added to the gherkin.steps array in your &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt;. &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;This is also the reason why CodeceptJS provided the option to specify which feature file you want to scan and where you want the steps’ definition templates to be written. Passing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--feature&lt;/code&gt; option to the command above will make sure only the specified file will be scanned, while passing &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--path&lt;/code&gt; option will write the generated code template to the specified file.&lt;label for=&quot;step-definition-file-in-config&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;step-definition-file-in-config&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;Before you pass a step file with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--path&lt;/code&gt; option, the step should already be added to the gherkin.steps array in your &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt;. &lt;/span&gt;&lt;/p&gt;
 
-&lt;p&gt;Let’s see it in action. Start by creating a new step file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;step_definitions&lt;/code&gt; folder for the basic feature. I will call mine &lt;code class=&quot;highlighter-rouge&quot;&gt;basic.steps.js&lt;/code&gt;. Then, update the gherkin.steps array in my &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file, so it looks like:&lt;/p&gt;
+&lt;p&gt;Let’s see it in action. Start by creating a new step file in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;step_definitions&lt;/code&gt; folder for the basic feature. I will call mine &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;basic.steps.js&lt;/code&gt;. Then, update the gherkin.steps array in my &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt; file, so it looks like:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;steps: [
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;steps: [
     './step_definitions/steps.js',
     './step_definitions/basic.steps.js'
 ]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;We can now re-run the snippet command with the &lt;code class=&quot;highlighter-rouge&quot;&gt;--feature&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;--path&lt;/code&gt; option with the command below:&lt;/p&gt;
+&lt;p&gt;We can now re-run the snippet command with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--feature&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--path&lt;/code&gt; option with the command below:&lt;/p&gt;
 
 &lt;div class=&quot;language-shell highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;npx codeceptjs gherkin:snippets &lt;span class=&quot;nt&quot;&gt;--feature&lt;/span&gt; ./features/basic.feature &lt;span class=&quot;nt&quot;&gt;--path&lt;/span&gt; ./step_definitions/basic.steps.js
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;I am sure you agree that the command is quite long, plus we must always manually create a steps’ definition file for every feature file as well as remember to update the gherkin.steps array in our &lt;code class=&quot;highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I am sure you agree that the command is quite long, plus we must always manually create a steps’ definition file for every feature file as well as remember to update the gherkin.steps array in our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;codecept.conf.js&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;I don’t have the patience to keep repeating these steps, plus I won’t remember the step nor the command. So, I created a &lt;a href=&quot;https://www.npmjs.com/package/codecept-cli&quot;&gt;package&lt;/a&gt; for doing just that.&lt;/p&gt;
 
 &lt;h3 id=&quot;given&quot;&gt;Given&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; steps describe the initial state of the system - the scene of the scenario. It is typically something that happened or something that needs to happen before the user starts interacting with the system. Think of opening a page, initializing a database, creating a folder etc.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; steps describe the initial state of the system - the scene of the scenario. It is typically something that happened or something that needs to happen before the user starts interacting with the system. Think of opening a page, initializing a database, creating a folder etc.&lt;/p&gt;
 
-&lt;p&gt;Examining the &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; step &lt;code class=&quot;highlighter-rouge&quot;&gt;I am trying to initialize npm&lt;/code&gt; of our &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; above, this is where would create our project folder and &lt;code class=&quot;highlighter-rouge&quot;&gt;cd&lt;/code&gt; into the folder so, we can run the initialization command.&lt;/p&gt;
+&lt;p&gt;Examining the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; step &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I am trying to initialize npm&lt;/code&gt; of our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; above, this is where would create our project folder and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cd&lt;/code&gt; into the folder so, we can run the initialization command.&lt;/p&gt;
 
-&lt;p&gt;It is absolutely okay to have more than one &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; step in your scenario, you can, however, make it more readable by using &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;And&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;It is absolutely okay to have more than one &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; step in your scenario, you can, however, make it more readable by using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;And&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Other Examples:&lt;/p&gt;
 
@@ -400,11 +661,11 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h3 id=&quot;when&quot;&gt;When&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;When&lt;/code&gt; step describes an event or an action performed by a person(think product persona) interacting with the system, or it can be an event triggered by another system.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;When&lt;/code&gt; step describes an event or an action performed by a person(think product persona) interacting with the system, or it can be an event triggered by another system.&lt;/p&gt;
 
-&lt;p&gt;It’s strongly recommended to only have a one &lt;code class=&quot;highlighter-rouge&quot;&gt;When&lt;/code&gt; per &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt;. If you see yourself adding more than one &lt;code class=&quot;highlighter-rouge&quot;&gt;When&lt;/code&gt; per &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt;, then that is a big red flag you need to split that scenario into multiple scenarios.&lt;/p&gt;
+&lt;p&gt;It’s strongly recommended to only have a one &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;When&lt;/code&gt; per &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt;. If you see yourself adding more than one &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;When&lt;/code&gt; per &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt;, then that is a big red flag you need to split that scenario into multiple scenarios.&lt;/p&gt;
 
-&lt;p&gt;Examining the &lt;code class=&quot;highlighter-rouge&quot;&gt;When&lt;/code&gt; step &lt;code class=&quot;highlighter-rouge&quot;&gt;I run the command npm init -y&lt;/code&gt; of our &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; above, the person here is me while the action is running the command &lt;code class=&quot;highlighter-rouge&quot;&gt;npm init -y&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Examining the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;When&lt;/code&gt; step &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;I run the command npm init -y&lt;/code&gt; of our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; above, the person here is me while the action is running the command &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;npm init -y&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Other Examples:&lt;/p&gt;
 
@@ -420,11 +681,11 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h3 id=&quot;then&quot;&gt;Then&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; steps describe an expected outcome or result. This is where we would normally do an assertion that the action performed with the &lt;code class=&quot;highlighter-rouge&quot;&gt;When&lt;/code&gt; step yield the expected outcome.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; steps describe an expected outcome or result. This is where we would normally do an assertion that the action performed with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;When&lt;/code&gt; step yield the expected outcome.&lt;/p&gt;
 
-&lt;p&gt;Just like the &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; step, it is also okay to have more than one &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; step in your scenario, you can, however, make it more readable by using &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;And&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Just like the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; step, it is also okay to have more than one &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; step in your scenario, you can, however, make it more readable by using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;And&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;Examining the &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; step &lt;code class=&quot;highlighter-rouge&quot;&gt;a package.json file must be generated&lt;/code&gt; of our &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; above, this is where we check for the existence of the package.json file.&lt;/p&gt;
+&lt;p&gt;Examining the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; step &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;a package.json file must be generated&lt;/code&gt; of our &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; above, this is where we check for the existence of the package.json file.&lt;/p&gt;
 
 &lt;p&gt;Other Examples:&lt;/p&gt;
 
@@ -447,11 +708,11 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h3 id=&quot;and&quot;&gt;And&lt;/h3&gt;
 
-&lt;p&gt;As described in the &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; section, &lt;code class=&quot;highlighter-rouge&quot;&gt;And&lt;/code&gt; step can be used for making successive &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; more fluidly structured and readable.&lt;/p&gt;
+&lt;p&gt;As described in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; section, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;And&lt;/code&gt; step can be used for making successive &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; more fluidly structured and readable.&lt;/p&gt;
 
 &lt;h3 id=&quot;background&quot;&gt;Background&lt;/h3&gt;
 
-&lt;p&gt;Sometimes you find yourself repeating the same steps for the scenarios in a &lt;code class=&quot;highlighter-rouge&quot;&gt;Feature&lt;/code&gt;. This is the reason for the &lt;code class=&quot;highlighter-rouge&quot;&gt;Background&lt;/code&gt; step. It behaves like the CodeceptJS &lt;code class=&quot;highlighter-rouge&quot;&gt;Before Hook&lt;/code&gt;, however, try not to confuse it as being a replacement for the &lt;code class=&quot;highlighter-rouge&quot;&gt;Before Hook&lt;/code&gt; as CodeceptJS allow you to specify &lt;code class=&quot;highlighter-rouge&quot;&gt;Before&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;After&lt;/code&gt; Hooks for all your steps file.&lt;/p&gt;
+&lt;p&gt;Sometimes you find yourself repeating the same steps for the scenarios in a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Feature&lt;/code&gt;. This is the reason for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Background&lt;/code&gt; step. It behaves like the CodeceptJS &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Before Hook&lt;/code&gt;, however, try not to confuse it as being a replacement for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Before Hook&lt;/code&gt; as CodeceptJS allow you to specify &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Before&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;After&lt;/code&gt; Hooks for all your steps file.&lt;/p&gt;
 
 &lt;p&gt;Example:&lt;/p&gt;
 
@@ -492,7 +753,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h3 id=&quot;scenario-outline&quot;&gt;Scenario Outline&lt;/h3&gt;
 
-&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt;&lt;label for=&quot;no-support-for-scenario-outline&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;no-support-for-scenario-outline&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;As at the time of writing this post, CodeceptJS does not automatically generate the stub template definition for a &lt;em&gt;Scenario Outline&lt;/em&gt; so, you have to manually add the step definitions yourself. &lt;/span&gt; keyword can be used to run the same &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; multiple times, with different combinations of values. Think of it like what you already know as &lt;a href=&quot;https://codecept.io/advanced/#data-driven-tests&quot;&gt;Data Driven Test&lt;/a&gt; in CodeceptJS. The keyword &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario Template&lt;/code&gt; is a synonym of the keyword &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt; so, feel free to use them interchangeably.&lt;/p&gt;
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt;&lt;label for=&quot;no-support-for-scenario-outline&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;no-support-for-scenario-outline&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;As at the time of writing this post, CodeceptJS does not automatically generate the stub template definition for a &lt;em&gt;Scenario Outline&lt;/em&gt; so, you have to manually add the step definitions yourself. &lt;/span&gt; keyword can be used to run the same &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario&lt;/code&gt; multiple times, with different combinations of values. Think of it like what you already know as &lt;a href=&quot;https://codecept.io/advanced/#data-driven-tests&quot;&gt;Data Driven Test&lt;/a&gt; in CodeceptJS. The keyword &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario Template&lt;/code&gt; is a synonym of the keyword &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt; so, feel free to use them interchangeably.&lt;/p&gt;
 
 &lt;p&gt;Take the example below, you will see how repetitive the scenarios become, with the total number of fruits, number of fruits eaten, and the number of fruits left as the only changing values.&lt;/p&gt;
 
@@ -510,9 +771,9 @@ The tickets involve simple things like updating your info in Workday, going to W
     &lt;span class=&quot;nf&quot;&gt;Then &lt;/span&gt;I should have 15 apples left
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;We can collapse these two similar scenarios into a &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt; by replacing the changing values with a template delimited with &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt; &amp;gt;&lt;/code&gt; and passing the changing values in form of a table using the &lt;code class=&quot;highlighter-rouge&quot;&gt;Examples&lt;/code&gt; keyword. The table header should match the template used in the scenario.&lt;/p&gt;
+&lt;p&gt;We can collapse these two similar scenarios into a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt; by replacing the changing values with a template delimited with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&amp;lt; &amp;gt;&lt;/code&gt; and passing the changing values in form of a table using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Examples&lt;/code&gt; keyword. The table header should match the template used in the scenario.&lt;/p&gt;
 
-&lt;p&gt;Revising the initial example above using &lt;code class=&quot;highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;Revising the initial example above using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Scenario Outline&lt;/code&gt;:&lt;/p&gt;
 
 &lt;div class=&quot;language-gherkin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Notice how the template &amp;lt;total&amp;gt;, &amp;lt;eat&amp;gt; and &amp;lt;left&amp;gt; &lt;/span&gt;
 &lt;span class=&quot;c&quot;&gt;# matches the table header in the `Examples` keyword.&lt;/span&gt;
@@ -561,7 +822,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;While the above seems fine, the problem is the &lt;code class=&quot;highlighter-rouge&quot;&gt;$600&lt;/code&gt; from the &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; step &amp;amp; the &lt;code class=&quot;highlighter-rouge&quot;&gt;2&lt;/code&gt; in the &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; step will not be passed to the respective step function. There are different ways of resolving this so that data from the feature definition can be used in the step function.&lt;/p&gt;
+&lt;p&gt;While the above seems fine, the problem is the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;$600&lt;/code&gt; from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; step &amp;amp; the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;2&lt;/code&gt; in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; step will not be passed to the respective step function. There are different ways of resolving this so that data from the feature definition can be used in the step function.&lt;/p&gt;
 
 &lt;ol&gt;
   &lt;li&gt;Using Regular Expressions:&lt;/li&gt;
@@ -572,7 +833,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h3 id=&quot;using-regular-expressions&quot;&gt;Using Regular Expressions&lt;/h3&gt;
 
-&lt;p&gt;We would change the step definition’s expression to be a Regular Expression. The Regular Expression much match the step defined in the feature file. Using the &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt; step definition defined above as &lt;code class=&quot;highlighter-rouge&quot;&gt;Given I have product with $600 price in my cart&lt;/code&gt;, updating the generated step definition using Regular Expressions will look like:&lt;/p&gt;
+&lt;p&gt;We would change the step definition’s expression to be a Regular Expression. The Regular Expression much match the step defined in the feature file. Using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt; step definition defined above as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given I have product with $600 price in my cart&lt;/code&gt;, updating the generated step definition using Regular Expressions will look like:&lt;/p&gt;
 
 &lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;Given&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/I have product with &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\$(\d&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt; price in my cart/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;price&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// From &quot;features/basic.feature&quot; {&quot;line&quot;:5,&quot;column&quot;:5}&lt;/span&gt;
@@ -581,13 +842,13 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;(\d+)&lt;/code&gt; will be passed as a parameter to the step function. The parameters will be passed according to when they appear in the expression, &lt;code class=&quot;highlighter-rouge&quot;&gt;(\d+)&lt;/code&gt; being the first parameter found in the expression will be the first to be passed to the function.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(\d+)&lt;/code&gt; will be passed as a parameter to the step function. The parameters will be passed according to when they appear in the expression, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;(\d+)&lt;/code&gt; being the first parameter found in the expression will be the first to be passed to the function.&lt;/p&gt;
 
-&lt;p&gt;The parameters don’t have names, so feel free to access them with any name you see fit. In my example I have chosen to use &lt;code class=&quot;highlighter-rouge&quot;&gt;price&lt;/code&gt; but, I could as well change it to &lt;code class=&quot;highlighter-rouge&quot;&gt;parameter1&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The parameters don’t have names, so feel free to access them with any name you see fit. In my example I have chosen to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;price&lt;/code&gt; but, I could as well change it to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parameter1&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h3 id=&quot;using-cucumber-expressions&quot;&gt;Using Cucumber Expressions&lt;/h3&gt;
 
-&lt;p&gt;Cucumber Expressions offer similar functionality to Regular Expressions, with a syntax that is easier to read and write. My personal preference is to use Cucumber Expressions. Using the &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt; step definition defined above as &lt;code class=&quot;highlighter-rouge&quot;&gt;Then I should see that total number of products is 2&lt;/code&gt;, updating the generated step function using Cucumber Expressions will look like:&lt;/p&gt;
+&lt;p&gt;Cucumber Expressions offer similar functionality to Regular Expressions, with a syntax that is easier to read and write. My personal preference is to use Cucumber Expressions. Using the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt; step definition defined above as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then I should see that total number of products is 2&lt;/code&gt;, updating the generated step function using Cucumber Expressions will look like:&lt;/p&gt;
 
 &lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;Then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;I should see that total number of products is {int}&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;totalProduct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// From &quot;features/basic.feature&quot; {&quot;line&quot;:7,&quot;column&quot;:5}&lt;/span&gt;
@@ -596,9 +857,9 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Just like the Regular Expressions, the parameters will be passed according to when they appear in the expression. I also chose to use &lt;code class=&quot;highlighter-rouge&quot;&gt;totalProduct&lt;/code&gt; as the variable name for accessing the first parameter, you can change this to whatever you like.&lt;/p&gt;
+&lt;p&gt;Just like the Regular Expressions, the parameters will be passed according to when they appear in the expression. I also chose to use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;totalProduct&lt;/code&gt; as the variable name for accessing the first parameter, you can change this to whatever you like.&lt;/p&gt;
 
-&lt;p&gt;The following are built-in parameter types that can be used with Cucumber Expressions. &lt;code class=&quot;highlighter-rouge&quot;&gt;{int}&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;{float}&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;{word}&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;{string}&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;{}&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The following are built-in parameter types that can be used with Cucumber Expressions. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{int}&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{float}&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{word}&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{string}&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{}&lt;/code&gt;.&lt;/p&gt;
 
 &lt;table&gt;
   &lt;thead&gt;
@@ -631,20 +892,20 @@ The tickets involve simple things like updating your info in Workday, going to W
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;p&gt;CodeceptJS will automatically convert double-quoted strings to Cucumber Expressions. For example, the generated step function for this =&amp;gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;Given I have 2 &quot;apples&quot; and 4 &quot;tomatoes&quot;&lt;/code&gt; will look like:&lt;/p&gt;
+&lt;p&gt;CodeceptJS will automatically convert double-quoted strings to Cucumber Expressions. For example, the generated step function for this =&amp;gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given I have 2 &quot;apples&quot; and 4 &quot;tomatoes&quot;&lt;/code&gt; will look like:&lt;/p&gt;
 
 &lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;Given&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;I have 2 {string} and 4 {string}&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fruit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;vegetable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fruit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;vegetable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;As you can see, I am accessing both parameters using &lt;code class=&quot;highlighter-rouge&quot;&gt;fruit&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;vegetable&lt;/code&gt;, which could also be changed to &lt;code class=&quot;highlighter-rouge&quot;&gt;parameter1&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;parameter2&lt;/code&gt;. &lt;code class=&quot;highlighter-rouge&quot;&gt;fruit&lt;/code&gt; will be equal to &lt;code class=&quot;highlighter-rouge&quot;&gt;apples&lt;/code&gt; while &lt;code class=&quot;highlighter-rouge&quot;&gt;vegetable&lt;/code&gt; will be equals to &lt;code class=&quot;highlighter-rouge&quot;&gt;tomatoes&lt;/code&gt; when the test runs.&lt;/p&gt;
+&lt;p&gt;As you can see, I am accessing both parameters using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fruit&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vegetable&lt;/code&gt;, which could also be changed to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parameter1&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;parameter2&lt;/code&gt;. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fruit&lt;/code&gt; will be equal to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;apples&lt;/code&gt; while &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vegetable&lt;/code&gt; will be equals to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;tomatoes&lt;/code&gt; when the test runs.&lt;/p&gt;
 
 &lt;p&gt;You can do much more with Cucumber Expressions, check the &lt;a href=&quot;https://cucumber.io/docs/cucumber/cucumber-expressions/&quot;&gt;official documentation&lt;/a&gt; for other possibilities not covered in this article.&lt;/p&gt;
 
 &lt;h3 id=&quot;using-doc-strings&quot;&gt;Using Doc Strings&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt; is handy for passing larger pieces of text that would not fit into a &lt;code class=&quot;highlighter-rouge&quot;&gt;{word}&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;{string}&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;{}&lt;/code&gt;. Unlike &lt;code class=&quot;highlighter-rouge&quot;&gt;{int}&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;{float}&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;{word}&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;{string}&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;{}&lt;/code&gt; there is no need for you to match the &lt;code class=&quot;highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt; to a parameter in the step definition. This will be automatically passed as the last parameter of the step function and can be accessed with the &lt;code class=&quot;highlighter-rouge&quot;&gt;content&lt;/code&gt; property of the last parameter.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt; is handy for passing larger pieces of text that would not fit into a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{word}&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{string}&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{}&lt;/code&gt;. Unlike &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{int}&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{float}&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{word}&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{string}&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;{}&lt;/code&gt; there is no need for you to match the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt; to a parameter in the step definition. This will be automatically passed as the last parameter of the step function and can be accessed with the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;content&lt;/code&gt; property of the last parameter.&lt;/p&gt;
 
 &lt;p&gt;Example:&lt;/p&gt;
 
@@ -659,7 +920,7 @@ The tickets involve simple things like updating your info in Workday, going to W
         &quot;&quot;&quot;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;The indentation of the &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;&quot;&quot;&lt;/code&gt; is not very important, but I prefer to indent two spaces after the enclosing step, the indentation inside the &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;&quot;&quot;&lt;/code&gt; is however important, because it behaves like the Javascript ES6 template literal and preserves the content as it was written in the &lt;code class=&quot;highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The indentation of the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&quot;&quot;&quot;&lt;/code&gt; is not very important, but I prefer to indent two spaces after the enclosing step, the indentation inside the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;&quot;&quot;&quot;&lt;/code&gt; is however important, because it behaves like the Javascript ES6 template literal and preserves the content as it was written in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;The generated step definition for the example feature above will look like:&lt;/p&gt;
 
@@ -668,11 +929,11 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Remember that the &lt;code class=&quot;highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt; is passed as the last parameter, and the value can be accessed from the &lt;code class=&quot;highlighter-rouge&quot;&gt;content&lt;/code&gt; property, which is why I logged &lt;code class=&quot;highlighter-rouge&quot;&gt;docString.content&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Remember that the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt; is passed as the last parameter, and the value can be accessed from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;content&lt;/code&gt; property, which is why I logged &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;docString.content&lt;/code&gt;.&lt;/p&gt;
 
 &lt;h3 id=&quot;using-data-tables&quot;&gt;Using Data Tables&lt;/h3&gt;
 
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Data Tables&lt;/code&gt; are perfect for passing a list/array into a step function. So, instead of repeating a step with different values, we can pass those values as a list and iterate over them in our step function.&lt;/p&gt;
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Data Tables&lt;/code&gt; are perfect for passing a list/array into a step function. So, instead of repeating a step with different values, we can pass those values as a list and iterate over them in our step function.&lt;/p&gt;
 
 &lt;div class=&quot;language-gherkin highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Instead of doing&lt;/span&gt;
 &lt;span class=&quot;kn&quot;&gt;Scenario&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
@@ -691,7 +952,7 @@ The tickets involve simple things like updating your info in Workday, going to W
     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jonathan@example.com&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jonathan&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Just like &lt;code class=&quot;highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;Data Tables&lt;/code&gt; will be the last parameter passed to the step function. So the step definition for the scenario above will look something like:&lt;/p&gt;
+&lt;p&gt;Just like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Doc Strings&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Data Tables&lt;/code&gt; will be the last parameter passed to the step function. So the step definition for the scenario above will look something like:&lt;/p&gt;
 
 &lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;Given&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;user with email and twitter username exists&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;dataTable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;tableByHeader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;dataTable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;hashes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
@@ -705,7 +966,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;CodeceptJS allows you to parse the table using &lt;code class=&quot;highlighter-rouge&quot;&gt;hashes&lt;/code&gt; as we saw above and two other methods:&lt;/p&gt;
+&lt;p&gt;CodeceptJS allows you to parse the table using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;hashes&lt;/code&gt; as we saw above and two other methods:&lt;/p&gt;
 
 &lt;ul&gt;
   &lt;li&gt;&lt;strong&gt;raw()&lt;/strong&gt; - returns the table as a 2-D array&lt;/li&gt;
@@ -715,11 +976,11 @@ The tickets involve simple things like updating your info in Workday, going to W
 
 &lt;h2 id=&quot;finally&quot;&gt;Finally&lt;/h2&gt;
 
-&lt;p&gt;The four methods outlined above for passing data from the feature file to step function can be used with any of the step keyword &lt;code class=&quot;highlighter-rouge&quot;&gt;Given&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;Then&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;When&lt;/code&gt; etc.&lt;/p&gt;
+&lt;p&gt;The four methods outlined above for passing data from the feature file to step function can be used with any of the step keyword &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Given&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Then&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;When&lt;/code&gt; etc.&lt;/p&gt;
 
-&lt;p&gt;CodeceptJS supports &lt;code class=&quot;highlighter-rouge&quot;&gt;Before&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;After&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;Fail&lt;/code&gt; Hooks in the step definition files.&lt;/p&gt;
+&lt;p&gt;CodeceptJS supports &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Before&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;After&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Fail&lt;/code&gt; Hooks in the step definition files.&lt;/p&gt;
 
-&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;Before&lt;/code&gt; Hook runs before any of the Scenario, it takes the current test as a parameter and is the best place to manage state between Scenarios or do general test configuration.&lt;/p&gt;
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Before&lt;/code&gt; Hook runs before any of the Scenario, it takes the current test as a parameter and is the best place to manage state between Scenarios or do general test configuration.&lt;/p&gt;
 
 &lt;p&gt;Example:&lt;/p&gt;
 
@@ -739,7 +1000,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;After&lt;/code&gt; Hook runs after all the Scenarios, this is the best place to do general garbage collection or in simple terms clean up.&lt;/p&gt;
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;After&lt;/code&gt; Hook runs after all the Scenarios, this is the best place to do general garbage collection or in simple terms clean up.&lt;/p&gt;
 
 &lt;p&gt;Example:&lt;/p&gt;
 
@@ -749,7 +1010,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;Fail&lt;/code&gt; Hook run when any of the Scenario fails and receives two parameters, the current &lt;code class=&quot;highlighter-rouge&quot;&gt;test&lt;/code&gt; and the current &lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Fail&lt;/code&gt; Hook run when any of the Scenario fails and receives two parameters, the current &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;test&lt;/code&gt; and the current &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;error&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;Example:&lt;/p&gt;
 
@@ -758,7 +1019,7 @@ The tickets involve simple things like updating your info in Workday, going to W
 &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
-&lt;p&gt;Note that not all tests should be defined as BDD features, as such you might have generic acceptance tests, and a minimal set of BDD Scenarios for your key business values. By default, CodeceptJS will run both your BDD Scenarios and general acceptance tests with the command &lt;code class=&quot;highlighter-rouge&quot;&gt;npx codeceptjs run&lt;/code&gt;, the BDD Scenarios runs first. You can tell CodeceptJS to run only the general acceptance tests by appending &lt;code class=&quot;highlighter-rouge&quot;&gt;--tests&lt;/code&gt; to the command or run only the BDD Scenarios by appending &lt;code class=&quot;highlighter-rouge&quot;&gt;--features&lt;/code&gt; to the command.&lt;/p&gt;
+&lt;p&gt;Note that not all tests should be defined as BDD features, as such you might have generic acceptance tests, and a minimal set of BDD Scenarios for your key business values. By default, CodeceptJS will run both your BDD Scenarios and general acceptance tests with the command &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;npx codeceptjs run&lt;/code&gt;, the BDD Scenarios runs first. You can tell CodeceptJS to run only the general acceptance tests by appending &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--tests&lt;/code&gt; to the command or run only the BDD Scenarios by appending &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;--features&lt;/code&gt; to the command.&lt;/p&gt;
 
 &lt;p&gt;If you are new to BDD, I strongly recommend reading the following articles:&lt;/p&gt;
 
